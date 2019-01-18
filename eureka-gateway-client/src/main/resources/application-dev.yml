@@ -1,0 +1,34 @@
+eureka:
+  instance:
+    ip-address: localhost
+    hostname: ${eureka.instance.ip-address}
+    instance-id: ${eureka.instance.ip-address}:${server.port}
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      #      discovery:
+      #        locator:
+      #          enabled: true #开启服务发现路由规则
+      #          lower-case-service-id: true #当注册中心为eureka时，设置为true表示开启用小写的serviceId进行基于服务路由的转发，若不配置，默认大写访问，否则会报404
+      routes:
+      - id: service1_v1
+        uri: http://localhost:8762/v1
+        predicates:
+        - Path=/hiapi
+        - Weight=service1, 25
+      - id: service1_v2
+        uri: http://localhost:8762/v2
+        predicates:
+        - Path=/hiapi
+        - Weight=service1, 75
+  boot:
+    admin:
+      client:
+        url: "http://localhost:5000"
